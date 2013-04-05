@@ -41,6 +41,7 @@ NSInteger const AFHTTPClientBackgroundTaskExpiredError = -1001;
 - (id)synchronouslyPerformMethod:(NSString *)method
                             path:(NSString *)path
                       parameters:(NSDictionary *)parameters
+                        userInfo:(NSDictionary *)userInfo
                        operation:(AFHTTPRequestOperation *__autoreleasing *)operationPtr
                            error:(NSError *__autoreleasing *)outError
 {
@@ -49,7 +50,7 @@ NSInteger const AFHTTPClientBackgroundTaskExpiredError = -1001;
     dispatch_group_t group = dispatch_group_create();
     
     NSURLRequest *request = [self requestWithMethod:method path:path parameters:parameters];
-    AFHTTPRequestOperation *op = [self HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation *operation, id responseObject) {
+    AFHTTPRequestOperation *op = [self HTTPRequestOperationWithRequest:request userInfo:userInfo success:^(AFHTTPRequestOperation *operation, id responseObject) {
         if (operationPtr) *operationPtr = operation;
         result = responseObject;
         dispatch_group_leave(group);
@@ -100,42 +101,47 @@ NSInteger const AFHTTPClientBackgroundTaskExpiredError = -1001;
 
 - (id)synchronouslyGetPath:(NSString *)path
                 parameters:(NSDictionary *)parameters
+                  userInfo:(NSDictionary *)userInfo
                  operation:(AFHTTPRequestOperation *__autoreleasing *)operationPtr
                      error:(NSError *__autoreleasing *)outError
 {
-    return [self synchronouslyPerformMethod:@"GET" path:path parameters:parameters operation:operationPtr error:outError];
+    return [self synchronouslyPerformMethod:@"GET" path:path parameters:parameters userInfo:userInfo operation:operationPtr error:outError];
 }
 
 - (id)synchronouslyPostPath:(NSString *)path
                  parameters:(NSDictionary *)parameters
+                   userInfo:(NSDictionary *)userInfo
                   operation:(AFHTTPRequestOperation *__autoreleasing *) operationPtr
                       error:(NSError *__autoreleasing *) outError
 {
-    return [self synchronouslyPerformMethod:@"POST" path:path parameters:parameters operation:operationPtr error:outError];
+    return [self synchronouslyPerformMethod:@"POST" path:path parameters:parameters userInfo:userInfo operation:operationPtr error:outError];
 }
 
 - (id)synchronouslyPutPath:(NSString *)path
                 parameters:(NSDictionary *)parameters
+                  userInfo:(NSDictionary *)userInfo
                  operation:(AFHTTPRequestOperation *__autoreleasing *) operationPtr
                      error:(NSError *__autoreleasing *) outError
 {
-    return [self synchronouslyPerformMethod:@"PUT" path:path parameters:parameters operation:operationPtr error:outError];
+    return [self synchronouslyPerformMethod:@"PUT" path:path parameters:parameters userInfo:userInfo operation:operationPtr error:outError];
 }
 
 - (id)synchronouslyDeletePath:(NSString *)path
                    parameters:(NSDictionary *)parameters
+                     userInfo:(NSDictionary *)userInfo
                     operation:(AFHTTPRequestOperation *__autoreleasing *) operationPtr
                         error:(NSError *__autoreleasing *) outError
 {
-    return [self synchronouslyPerformMethod:@"DELETE" path:path parameters:parameters operation:operationPtr error:outError];
+    return [self synchronouslyPerformMethod:@"DELETE" path:path parameters:parameters userInfo:userInfo operation:operationPtr error:outError];
 }
 
 - (id)synchronouslyPatchPath:(NSString *)path
                   parameters:(NSDictionary *)parameters
+                    userInfo:(NSDictionary *)userInfo
                    operation:(AFHTTPRequestOperation *__autoreleasing *) operationPtr
                        error:(NSError *__autoreleasing *) outError
 {
-    return [self synchronouslyPerformMethod:@"PATCH" path:path parameters:parameters operation:operationPtr error:outError];
+    return [self synchronouslyPerformMethod:@"PATCH" path:path parameters:parameters userInfo:userInfo operation:operationPtr error:outError];
 }
 
 @end
