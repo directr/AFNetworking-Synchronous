@@ -1,4 +1,4 @@
-AFNetworking-Synchronous
+AFNetworking-Synchronous for AFNetworking 2.0
 ========================
 
 A minimal category which extends [AFNetworking][], specifically
