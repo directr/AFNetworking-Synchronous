@@ -1,7 +1,7 @@
-AFNetworking-Synchronous for AFNetworking 2.0
+AFNetworking-Synchronous
 ========================
 
-A minimal category which extends [AFNetworking][], specifically
+A minimal category which extends [AFNetworking] 2.0, specifically
 `AFHTTPRequestOperationManager`, to support synchronous requests.
 
 ## Example
