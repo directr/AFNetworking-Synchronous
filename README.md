@@ -2,14 +2,14 @@ AFNetworking-Synchronous
 ========================
 
 A minimal category which extends [AFNetworking][], specifically
-`AFHTTPClient`, to support synchronous requests.
+`AFHTTPRequestOperationManager`, to support synchronous requests.
 
 ## Example
 
 ```objective-c
 NSError *error = nil;
 NSData *result =
-[[AFHTTPClient sharedClient] synchronouslyGetPath:@"/document/123"
+[[AFHTTPRequestOperationManager instance] synchronouslyGetPath:@"/document/123"
                                        parameters:paramDict
                                         operation:NULL
                                             error:&error];
@@ -40,17 +40,9 @@ While it overrides the default success and failure queues to avoid a deadlock, i
  
 You shouldn't call these methods from the main thread. On iOS, if your application enters the background while one of these methods is running on the main thread, a deadlock may result and your application could be terminated.
 
-### AFImageRequestOperation processingBlock and custom operation subclasses
- 
-This category is suitable for most of the request operation subclasses built into AFNetworking, which process their response objects synchronously.
-
-**If you're using the processingBlock on AFImageRequestOperation, which contains essential processing in the completion handler, or your subclass performs other asynchronous processing in the completion handler, use the version in the [using-completion-blocks branch][using-completion-blocks] instead.**
- 
-All custom subclasses must override `-responseObject`. See `AFHTTPRequestOperation+ResponseObject.h` for more information.
-
 ## Notes
 
-Developed for Mac OS and iOS. Tested on Mac OS.
+Developed for Mac OS and iOS. Tested on iOS.
 
 [AFNetworking]: https://github.com/AFNetworking/AFNetworking
 [using-completion-blocks]: https://github.com/noa--/AFNetworking-Synchronous/tree/using-completion-blocks
