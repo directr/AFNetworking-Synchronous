@@ -1,4 +1,11 @@
-// AFHTTPClient+Synchronous.m
+//// AFHTTPRequestOperationManager+Synchronous.m
+
+
+
+// formerly AFHTTPClient+Synchronous, updated to AFNetworking 2.0 by Becky
+
+
+
 //
 // Copyright (c) 2013 Paul Melnikow
 //
@@ -20,10 +27,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "AFHTTPClient+Synchronous.h"
-#import "AFHTTPRequestOperation+ResponseObject.h"
+#import "AFHTTPRequestOperationManager+Synchronous.h"
+#import "AFNetworking.h"
 
-@implementation AFHTTPClient (Synchronous)
+@implementation AFHTTPRequestOperationManager (Synchronous)
 
 - (id)synchronouslyPerformMethod:(NSString *)method
                             path:(NSString *)path
@@ -31,40 +38,43 @@
                        operation:(AFHTTPRequestOperation *__autoreleasing *)operationPtr
                            error:(NSError *__autoreleasing *)outError
 {
-    NSURLRequest *request = [self requestWithMethod:method path:path parameters:parameters];
+    NSMutableURLRequest *request = [self.requestSerializer requestWithMethod:method URLString:[[NSURL URLWithString:path relativeToURL:self.baseURL] absoluteString] parameters:parameters error:nil];
     AFHTTPRequestOperation *op = [self HTTPRequestOperationWithRequest:request success:nil failure:nil];
-        
-#if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
-    // By registering the operation as a long-running background task, if the app enters
-    // background, it is more likely to complete. However, it does not guarantee that the
-    // method will return.
-    //
-    // When a background task is about to run out of time, the expiration handler is run
-    // on the main queue.
-    //
-    // Using this feature while blocking the main thread causes a deadlock. Then the
-    // operation never gets to call `endBackgroundTask:` and the system terminates the
-    // app. Refer to the docs for
-    // `-[AFURLConnectionOperation setShouldExecuteAsBackgroundTaskWithExpirationHandler:`
-    // and `-[NSOperation beginBackgroundTaskWithExpirationHandler:]`
-    
-    if (![NSThread isMainThread]) {
-        [op setShouldExecuteAsBackgroundTaskWithExpirationHandler:^(void) {
-            if (outError) *outError =
-                [NSError errorWithDomain:AFHTTPClientErrorDomain
-                                    code:AFHTTPClientBackgroundTaskExpiredError
-                                userInfo:@{ NSLocalizedDescriptionKey: @"Background operation time expired" }];
-        }];
-        // At this point this thread may wake up but probably isn't guaranteed to do so.
-    }
-#endif
     
     [op start];
     [op waitUntilFinished];
     
     if (operationPtr != nil) *operationPtr = op;
+    
+    // Must call responseObject before checking the error
+    id responseObject = [op responseObject];
     if (outError != nil) *outError = [op error];
-    return [op responseObject];
+    
+    return responseObject;
+}
+
+- (id)synchronouslyPerformMethod:(NSString *)method
+                            path:(NSString *)path
+                            data:(NSData *)data
+                      serializer:(AFHTTPRequestSerializer*)serializer
+                       operation:(AFHTTPRequestOperation *__autoreleasing *)operationPtr
+                           error:(NSError *__autoreleasing *)outError
+{
+    
+    
+    NSURLRequest *request = [serializer requestWithMethod:method URLString:[[NSURL URLWithString:path relativeToURL:self.baseURL] absoluteString] parameters:data error:outError];
+    AFHTTPRequestOperation *op = [self HTTPRequestOperationWithRequest:request success:nil failure:nil];
+        
+    [op start];
+    [op waitUntilFinished];
+    
+    if (operationPtr != nil) *operationPtr = op;
+    
+    // Must call responseObject before checking the error
+    id responseObject = [op responseObject];
+    if (outError != nil) *outError = [op error];
+    
+    return responseObject;
 }
 
 - (id)synchronouslyGetPath:(NSString *)path
@@ -105,6 +115,33 @@
                        error:(NSError *__autoreleasing *) outError
 {
     return [self synchronouslyPerformMethod:@"PATCH" path:path parameters:parameters operation:operationPtr error:outError];
+}
+
+- (id)synchronouslyPostPath:(NSString *)path
+                       data:(NSData *)data
+                 serializer:(AFHTTPRequestSerializer *)serializer
+                  operation:(AFHTTPRequestOperation *__autoreleasing *)operationPtr
+                      error:(NSError *__autoreleasing *)outError
+{
+    return [self synchronouslyPerformMethod:@"POST" path:path data:data serializer:serializer operation:operationPtr error:outError];
+}
+
+- (id)synchronouslyPutPath:(NSString *)path
+                      data:(NSData *)data
+                serializer:(AFHTTPRequestSerializer *)serializer
+                 operation:(AFHTTPRequestOperation *__autoreleasing *)operationPtr
+                     error:(NSError *__autoreleasing *)outError
+{
+    return [self synchronouslyPerformMethod:@"PUT" path:path data:data serializer:serializer operation:operationPtr error:outError];
+}
+
+- (id)synchronouslyDeletePath:(NSString *)path
+                      data:(NSData *)data
+                serializer:(AFHTTPRequestSerializer *)serializer
+                 operation:(AFHTTPRequestOperation *__autoreleasing *)operationPtr
+                     error:(NSError *__autoreleasing *)outError
+{
+    return [self synchronouslyPerformMethod:@"DELETE" path:path data:data serializer:serializer operation:operationPtr error:outError];
 }
 
 @end

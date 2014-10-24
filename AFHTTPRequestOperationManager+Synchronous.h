@@ -1,4 +1,10 @@
-// AFHTTPClient+Synchronous.h
+// AFHTTPRequestOperationManager+Synchronous.h
+
+
+
+// formerly AFHTTPClient+Synchronous, updated to AFNetworking 2.0 by Becky
+
+
 //
 // Copyright (c) 2013 Paul Melnikow
 //
@@ -20,10 +26,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "AFHTTPClient.h"
+#import <AFHTTPRequestOperationManager.h>
 
 /**
- A minimal category which extends AFHTTPClient to support synchronous requests.
  
  ## First, consider adopting an asynchronous design
  
@@ -50,7 +55,7 @@
  
  All custom subclasses must override `-responseObject`. See AFHTTPRequestOperation+ResponseObject.h for more information.
 */
-@interface AFHTTPClient (Synchronous)
+@interface AFHTTPRequestOperationManager (Synchronous)
 
 - (id)synchronouslyGetPath:(NSString *)path
                 parameters:(NSDictionary *)parameters
@@ -82,5 +87,23 @@
                       parameters:(NSDictionary *)parameters
                        operation:(AFHTTPRequestOperation *__autoreleasing *)operationPtr
                            error:(NSError *__autoreleasing *)outError;
+
+- (id)synchronouslyPostPath:(NSString *)path
+                       data:(NSData *)data
+                 serializer:(AFHTTPRequestSerializer*)serializer
+                  operation:(AFHTTPRequestOperation *__autoreleasing *)operationPtr
+                      error:(NSError *__autoreleasing *)outError;
+
+- (id)synchronouslyPutPath:(NSString *)path
+                      data:(NSData *)data
+                serializer:(AFHTTPRequestSerializer*)serializer
+                 operation:(AFHTTPRequestOperation *__autoreleasing *)operationPtr
+                     error:(NSError *__autoreleasing *)outError;
+
+- (id)synchronouslyDeletePath:(NSString *)path
+                      data:(NSData *)data
+                serializer:(AFHTTPRequestSerializer*)serializer
+                 operation:(AFHTTPRequestOperation *__autoreleasing *)operationPtr
+                     error:(NSError *__autoreleasing *)outError;
 
 @end
